@@ -1,0 +1,80 @@
+TDNN(
+  (tdnn1): TDNNBlock(
+    (conv): Conv1d(40, 400, kernel_size=(7,), stride=(1,), padding=(3,))
+    (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+    (relu): ReLU()
+    (dropout): Identity()
+  )
+  (tdnn2): TDNNBlock(
+    (conv): Conv1d(400, 400, kernel_size=(5,), stride=(1,), padding=(4,), dilation=(2,))
+    (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+    (relu): ReLU()
+    (dropout): Dropout1d(p=0.2, inplace=False)
+  )
+  (tdnn3): TDNNBlock(
+    (conv): Conv1d(400, 400, kernel_size=(5,), stride=(1,), padding=(6,), dilation=(3,))
+    (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+    (relu): ReLU()
+    (dropout): Dropout1d(p=0.3, inplace=False)
+  )
+  (res1): ResidualTDNNBlock(
+    (tdnn1): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(2,), dilation=(2,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+    (tdnn2): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(2,), dilation=(2,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+  )
+  (res2): ResidualTDNNBlock(
+    (tdnn1): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(1,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+    (tdnn2): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(1,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+  )
+  (res3): ResidualTDNNBlock(
+    (tdnn1): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(1,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+    (tdnn2): TDNNBlock(
+      (conv): Conv1d(400, 400, kernel_size=(3,), stride=(1,), padding=(1,))
+      (ln): LayerNorm((400,), eps=1e-05, elementwise_affine=True)
+      (relu): ReLU()
+      (dropout): Identity()
+    )
+  )
+  (tdnn4): TDNNBlock(
+    (conv): Conv1d(400, 300, kernel_size=(1,), stride=(1,))
+    (ln): LayerNorm((300,), eps=1e-05, elementwise_affine=True)
+    (relu): ReLU()
+    (dropout): Dropout1d(p=0.3, inplace=False)
+  )
+  (tdnn5): TDNNBlock(
+    (conv): Conv1d(300, 300, kernel_size=(1,), stride=(1,))
+    (ln): LayerNorm((300,), eps=1e-05, elementwise_affine=True)
+    (relu): ReLU()
+    (dropout): Dropout1d(p=0.4, inplace=False)
+  )
+  (tdnn6): TDNNBlock(
+    (conv): Conv1d(300, 87, kernel_size=(1,), stride=(1,))
+    (ln): LayerNorm((87,), eps=1e-05, elementwise_affine=True)
+    (relu): Identity()
+    (dropout): Identity()
+  )
+)
