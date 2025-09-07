@@ -7,16 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Classroom\Commands\" />
+    <Folder Include="Classroom\Queries\" />
     <Folder Include="Exercise\Commands\" />
-    <Folder Include="Exercise\DTOs\" />
     <Folder Include="Exercise\Queries\" />
     <Folder Include="Rating\Commands\" />
-    <Folder Include="Rating\DTOs\" />
     <Folder Include="Rating\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="13.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

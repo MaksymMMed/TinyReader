@@ -1,7 +1,8 @@
 ﻿namespace Domain.Entities
 {
-    public class Exercises
+    public class Exercise
     {
         public Guid Id { get; set; }
+
     }
 }
