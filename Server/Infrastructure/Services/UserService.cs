@@ -1,8 +1,10 @@
 ﻿using Application.Common;
 using Application.Common.DTOs.User;
 using Application.Common.Interfaces;
+using Application.User.Query;
 using Domain.Entities;
 using Infrastructure.Data;
+using Infrastructure.Enums;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -18,56 +20,45 @@ namespace Infrastructure.Services
         private readonly UserManager<IdentityAppUser> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly IConfiguration _configuration;
-        private readonly AppDbContext _context;
 
-        public UserService(UserManager<IdentityAppUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, AppDbContext context, IConfiguration configuration)
+        public UserService(UserManager<IdentityAppUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration)
         {
             _configuration = configuration;
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = context;
         }
 
-        private string HashPassword(string password, IdentityAppUser user)
+        private async Task<Result<IdentityAppUser>> SignUp(string email, string name, string surname, string password)
         {
-            var passwordHasher = new PasswordHasher<IdentityAppUser>();
-            string hashedPassword = passwordHasher.HashPassword(user, password);
-            return hashedPassword;
-        }
-
-        public async Task<Result<bool>> SignUp(AppUser user, string password, string passwordRepeated)
-        {
-
-            if (password != passwordRepeated)
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
             {
-                throw new ArgumentException("Passwords do not match");
+                return Result<IdentityAppUser>.Fail("User with this email already exists")!;
             }
             var identityUser = new IdentityAppUser
             {
-                UserName = user.Email,
-                Email = user.Email,
-                Name = user.Name,
-                Surname = user.Surname,
+                Email = email,
+                Name = name,
+                Surname = surname,
             };
-            identityUser.PasswordHash = HashPassword(password, identityUser);
             var result = await _userManager.CreateAsync(identityUser, password);
+
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                return Result<bool>.Fail($"Failed to create user: {errors}");
+                return Result<IdentityAppUser>.Fail($"Failed to create user: {errors}")!;
             }
-            return Result<bool>.Success(true);
+            return Result<IdentityAppUser>.Success(identityUser);
         }
 
-        public async Task<Result<TokenDto>> SignIn(string Email, string password)
+        public async Task<Result<TokenDto>> SignIn(string email, string password)
         {
-            var user = await _userManager.FindByEmailAsync(Email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 return Result<TokenDto>.Fail("Invalid login or password")!;
             }
-            var hashedPassword = HashPassword(password, user);
-            var result = await _userManager.CheckPasswordAsync(user, hashedPassword);
+            var result = await _userManager.CheckPasswordAsync(user, password);
             if (!result)
             {
                 return Result<TokenDto>.Fail("Invalid login or password")!;
@@ -103,6 +94,47 @@ namespace Infrastructure.Services
             };
 
             return Result<TokenDto>.Success(tokenDto);
+        }
+
+
+        public async Task<Result<TokenDto>> SignUpStudent(string email, string name, string surname, string password, string passwordRepeated)
+        {
+            if (password != passwordRepeated)
+            {
+                return Result<TokenDto>.Fail("Passwords do not match")!;
+            }
+            var result = await SignUp(email, name, surname, password);
+            if (!result.IsSuccess)
+                return Result<TokenDto>.Fail(result.Error!)!;
+
+            var user = result.Value;
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.Student.ToString()))
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.Student.ToString());
+            }
+
+            return await SignIn(email, password);
+        }
+
+        public async Task<Result<TokenDto>> SignUpTeacher(string email, string name, string surname, string password, string passwordRepeated)
+        {
+            if (password != passwordRepeated)
+            {
+                return Result<TokenDto>.Fail("Passwords do not match")!;
+            }
+            var result = await SignUp(email, name, surname, password);
+            if (!result.IsSuccess)
+                return Result<TokenDto>.Fail(result.Error!)!;
+
+            var user = result.Value;
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.Teacher.ToString()))
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.Teacher.ToString());
+            }
+
+            return await SignIn(email, password);
         }
     }
 }

@@ -5,7 +5,8 @@ namespace Application.Common.Interfaces
 {
     public interface IUserService
     {
-        Task<Result<bool>> SignUp(AppUser user, string password, string passwordRepeated);
-        Task<Result<TokenDto>> SignIn(string Email, string password);
+        Task<Result<TokenDto>> SignIn(string email, string password);
+        Task<Result<TokenDto>> SignUpStudent(string email, string name, string surname, string password, string passwordRepeated);
+        Task<Result<TokenDto>> SignUpTeacher(string email, string name, string surname, string password, string passwordRepeated);
     }
 }

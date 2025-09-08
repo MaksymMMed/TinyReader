@@ -17,8 +17,8 @@ namespace Application.User.Query
 
         public async Task<Result<TokenDto>> Handle(SignInQuery query, CancellationToken cancellationToken)
         {
-            Result<TokenDto> dto = await _service.SignIn(query.Email, query.Password);
-            return dto;
+            var result = await _service.SignIn(query.Email,query.Password);
+            return result;
         }
     }
 }
