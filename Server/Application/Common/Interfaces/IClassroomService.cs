@@ -6,7 +6,7 @@ namespace Application.Common.Interfaces
     {
         public Task<Result<bool>> AddUserToClassroomAsync(Guid classroomId, Guid userId);
         public Task<Result<bool>> RemoveUserFromClassroomAsync(Guid classroomId, Guid userId);
-        public Task<Result<bool>> CreateClassroomAsync(string name, Guid teacherId);
+        public Task<Result<bool>> CreateClassroomAsync(string name);
         public Task<Result<bool>> DeleteClassroomAsync(Guid classroomId);
         public Task<Result<bool>> UpdateClassroomAsync(Guid classroomId, string name);
         public Task<Result<GetClassroomDto>> GetClassroomByIdAsync(Guid classroomId);

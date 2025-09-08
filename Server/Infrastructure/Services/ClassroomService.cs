@@ -4,10 +4,9 @@ using Application.Common.DTOs.User;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using Infrastructure.Data;
-using Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace Infrastructure.Services
 {
@@ -15,10 +14,12 @@ namespace Infrastructure.Services
     {
 
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ClassroomService(AppDbContext context)
+        public ClassroomService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result<bool>> AddUserToClassroomAsync(Guid classroomId, Guid userId)
@@ -35,6 +36,10 @@ namespace Infrastructure.Services
                 {
                     return Result<bool>.Fail("Student not found");
                 }
+                if (user.ClassroomId != null)
+                {
+                    return Result<bool>.Fail("Student is already in a classroom");
+                }
                 user.ClassroomId = classroomId;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -46,14 +51,18 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<Result<bool>> CreateClassroomAsync(string name, Guid teacherId)
+        public async Task<Result<bool>> CreateClassroomAsync(string name)
         {
             try
             {
+                var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Result<bool>.Fail("User not authenticated");
+
                 var classroom = new Classroom
                 {
                     Name = name,
-                    TeacherId = teacherId
+                    TeacherId = Guid.Parse(userIdClaim)
                 };
 
                 await _context.Classrooms.AddAsync(classroom);
