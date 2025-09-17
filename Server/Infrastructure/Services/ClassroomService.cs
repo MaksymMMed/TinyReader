@@ -31,23 +31,45 @@ namespace Infrastructure.Services
                 {
                     return Result<bool>.Fail("Classroom not found");
                 }
-                var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Students.Include(x => x.StudentClassrooms).Where(x => x.Id == userId).FirstOrDefaultAsync();
                 if (user == null)
                 {
                     return Result<bool>.Fail("Student not found");
                 }
-                if (user.ClassroomId != null)
-                {
-                    return Result<bool>.Fail("Student is already in a classroom");
-                }
-                user.ClassroomId = classroomId;
-                _context.Users.Update(user);
+
+                user.StudentClassrooms.Add(classroom);
+                _context.Students.Update(user);
                 await _context.SaveChangesAsync();
                 return Result<bool>.Success(true);
             }
             catch (Exception ex)
             {
                 return Result<bool>.Fail($"Cannot add student to classroom: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<bool>> RemoveUserFromClassroomAsync(Guid classroomId, Guid userId)
+        {
+            try
+            {
+                var classroom = await _context.Classrooms.FindAsync(classroomId);
+                if (classroom == null)
+                {
+                    return Result<bool>.Fail("Classroom not found");
+                }
+                var user = await _context.Students.Include(x => x.StudentClassrooms).Where(x => x.Id == userId).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    return Result<bool>.Fail("Student not found");
+                }
+                user.StudentClassrooms.Remove(classroom);
+                _context.Students.Update(user);
+                await _context.SaveChangesAsync();
+                return Result<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Fail($"Cannot remove student from classroom: {ex.Message}");
             }
         }
 
@@ -130,31 +152,6 @@ namespace Infrastructure.Services
             catch (Exception ex)
             {
                 return Result<GetClassroomDto>.Fail($"Cannot get classroom details: {ex.Message}")!;
-            }
-        }
-
-        public async Task<Result<bool>> RemoveUserFromClassroomAsync(Guid classroomId, Guid userId)
-        {
-            try
-            {
-                var classroom = await _context.Classrooms.FindAsync(classroomId);
-                if (classroom == null)
-                {
-                    return Result<bool>.Fail("Classroom not found");
-                }
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
-                {
-                    return Result<bool>.Fail("Student not found");
-                }
-                user.ClassroomId = null;
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                return Result<bool>.Success(true);
-            }
-            catch (Exception ex)
-            {
-                return Result<bool>.Fail($"Cannot remove student from classroom: {ex.Message}");
             }
         }
 

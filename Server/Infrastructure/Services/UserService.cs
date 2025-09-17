@@ -1,7 +1,6 @@
 ﻿using Application.Common;
 using Application.Common.DTOs.User;
 using Application.Common.Interfaces;
-using Application.User.Query;
 using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Enums;
@@ -17,18 +16,20 @@ namespace Infrastructure.Services
 {
     public class UserService : IUserService
     {
+        private readonly AppDbContext _context;
         private readonly UserManager<IdentityAppUser> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public UserService(UserManager<IdentityAppUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration)
+        public UserService(UserManager<IdentityAppUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration,AppDbContext context)
         {
             _configuration = configuration;
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
         }
 
-        private async Task<Result<IdentityAppUser>> SignUp(string email, string name, string surname, string password)
+        private async Task<Result<IdentityAppUser>> SignUp(string email, string name, string surname, string password, UserRoles role)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
@@ -38,16 +39,40 @@ namespace Infrastructure.Services
             var identityUser = new IdentityAppUser
             {
                 Email = email,
-                Name = name,
-                Surname = surname,
             };
             var result = await _userManager.CreateAsync(identityUser, password);
 
             if (!result.Succeeded)
             {
+
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return Result<IdentityAppUser>.Fail($"Failed to create user: {errors}")!;
             }
+
+            if (role == UserRoles.Student)
+            {
+                var user = new Student
+                {
+                    Id = identityUser.Id,
+                    Email = email,
+                    Name = name,
+                    Surname = surname,
+                };
+                _context.Students.Add(user);
+            }
+            else
+            {
+                var user = new Teacher
+                {
+                    Id = identityUser.Id,
+                    Email = email,
+                    Name = name,
+                    Surname = surname,
+                };
+                _context.Teachers.Add(user);
+            }
+            await _context.SaveChangesAsync();
+
             return Result<IdentityAppUser>.Success(identityUser);
         }
 
@@ -103,7 +128,7 @@ namespace Infrastructure.Services
             {
                 return Result<TokenDto>.Fail("Passwords do not match")!;
             }
-            var result = await SignUp(email, name, surname, password);
+            var result = await SignUp(email, name, surname, password,UserRoles.Student);
             if (!result.IsSuccess)
                 return Result<TokenDto>.Fail(result.Error!)!;
 
@@ -123,7 +148,7 @@ namespace Infrastructure.Services
             {
                 return Result<TokenDto>.Fail("Passwords do not match")!;
             }
-            var result = await SignUp(email, name, surname, password);
+            var result = await SignUp(email, name, surname, password, UserRoles.Teacher);
             if (!result.IsSuccess)
                 return Result<TokenDto>.Fail(result.Error!)!;
 
@@ -135,6 +160,51 @@ namespace Infrastructure.Services
             }
 
             return await SignIn(email, password);
+        }
+
+        public Task<Result<string>> GenerateConfirmationToken(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> GenerateResetPasswordToken(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendConfirmationEmail(string email, string confirmationLink)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendResetPasswordEmail(string email, string confirmationLink)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> ResetPassword(string email, string resetToken, string newPassword, string confirmPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> ConfirmEmail(string email, string confirmationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> ChangePassword(string oldPassword, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> ChangeUserName(string newName, string newSurname)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<string>> ChangeEmail(string newEmail)
+        {
+            throw new NotImplementedException();
         }
     }
 }
