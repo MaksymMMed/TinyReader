@@ -22,19 +22,121 @@ namespace Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClassroomStudent", b =>
+            modelBuilder.Entity("ClassroomStudents", b =>
                 {
-                    b.Property<Guid>("StudentClassroomsId")
+                    b.Property<Guid>("ClassroomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StudentsId")
+                    b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("StudentClassroomsId", "StudentsId");
+                    b.HasKey("ClassroomId", "StudentId");
 
-                    b.HasIndex("StudentsId");
+                    b.HasIndex("StudentId");
 
                     b.ToTable("ClassroomStudents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ClassroomId = new Guid("d291f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d292f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d293f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d294f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d295f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d291f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d292f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d293f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d294f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d295f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000010")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d291f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000011")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d292f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d293f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d294f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000014")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d295f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000015")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d291f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000016")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d292f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000017")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d293f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000018")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d294f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000019")
+                        },
+                        new
+                        {
+                            ClassroomId = new Guid("d295f1ee-6c54-4b01-90e6-d701748f0851"),
+                            StudentId = new Guid("00000000-0000-0000-0000-000000000020")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Classroom", b =>
@@ -51,7 +153,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid?>("TeacherId")
                         .HasColumnType("uniqueidentifier");
@@ -61,6 +164,48 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Classrooms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d291f1ee-6c54-4b01-90e6-d701748f0851"),
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "Classroom 1",
+                            TeacherId = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0851")
+                        },
+                        new
+                        {
+                            Id = new Guid("d292f1ee-6c54-4b01-90e6-d701748f0851"),
+                            CreatedAt = new DateTime(2022, 7, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "Classroom 2",
+                            TeacherId = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0851")
+                        },
+                        new
+                        {
+                            Id = new Guid("d293f1ee-6c54-4b01-90e6-d701748f0851"),
+                            CreatedAt = new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = false,
+                            Name = "Classroom 3",
+                            TeacherId = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0851")
+                        },
+                        new
+                        {
+                            Id = new Guid("d294f1ee-6c54-4b01-90e6-d701748f0851"),
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "Classroom 4",
+                            TeacherId = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0852")
+                        },
+                        new
+                        {
+                            Id = new Guid("d295f1ee-6c54-4b01-90e6-d701748f0851"),
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "Classroom 5",
+                            TeacherId = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0852")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Exercise", b =>
@@ -139,6 +284,148 @@ namespace Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Students");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Email = "test1@email.com",
+                            Name = "User1",
+                            Surname = "Surname1"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Email = "test2@email.com",
+                            Name = "User2",
+                            Surname = "Surname2"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            Email = "test3@email.com",
+                            Name = "User3",
+                            Surname = "Surname3"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            Email = "test4@email.com",
+                            Name = "User4",
+                            Surname = "Surname4"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                            Email = "test5@email.com",
+                            Name = "User5",
+                            Surname = "Surname5"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
+                            Email = "test6@email.com",
+                            Name = "User6",
+                            Surname = "Surname6"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
+                            Email = "test7@email.com",
+                            Name = "User7",
+                            Surname = "Surname7"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000008"),
+                            Email = "test8@email.com",
+                            Name = "User8",
+                            Surname = "Surname8"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                            Email = "test9@email.com",
+                            Name = "User9",
+                            Surname = "Surname9"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000010"),
+                            Email = "test10@email.com",
+                            Name = "User10",
+                            Surname = "Surname10"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000011"),
+                            Email = "test11@email.com",
+                            Name = "User11",
+                            Surname = "Surname11"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000012"),
+                            Email = "test12@email.com",
+                            Name = "User12",
+                            Surname = "Surname12"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000013"),
+                            Email = "test13@email.com",
+                            Name = "User13",
+                            Surname = "Surname13"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000014"),
+                            Email = "test14@email.com",
+                            Name = "User14",
+                            Surname = "Surname14"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000015"),
+                            Email = "test15@email.com",
+                            Name = "User15",
+                            Surname = "Surname15"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000016"),
+                            Email = "test16@email.com",
+                            Name = "User16",
+                            Surname = "Surname16"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000017"),
+                            Email = "test17@email.com",
+                            Name = "User17",
+                            Surname = "Surname17"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000018"),
+                            Email = "test18@email.com",
+                            Name = "User18",
+                            Surname = "Surname18"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000019"),
+                            Email = "test19@email.com",
+                            Name = "User19",
+                            Surname = "Surname19"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000020"),
+                            Email = "test20@email.com",
+                            Name = "User20",
+                            Surname = "Surname20"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Teacher", b =>
@@ -165,6 +452,22 @@ namespace Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Teachers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0851"),
+                            Email = "teacher1@email.com",
+                            Name = "John",
+                            Surname = "Doe"
+                        },
+                        new
+                        {
+                            Id = new Guid("d290f1ee-6c54-4b01-90e6-d701748f0852"),
+                            Email = "teacher2@email.com",
+                            Name = "Jane",
+                            Surname = "Smith"
+                        });
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.IdentityAppUser", b =>
@@ -364,19 +667,21 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ClassroomStudent", b =>
+            modelBuilder.Entity("ClassroomStudents", b =>
                 {
                     b.HasOne("Domain.Entities.Classroom", null)
                         .WithMany()
-                        .HasForeignKey("StudentClassroomsId")
+                        .HasForeignKey("ClassroomId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ClassroomStudents_Classrooms");
 
                     b.HasOne("Domain.Entities.Student", null)
                         .WithMany()
-                        .HasForeignKey("StudentsId")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ClassroomStudents_Students");
                 });
 
             modelBuilder.Entity("Domain.Entities.Classroom", b =>

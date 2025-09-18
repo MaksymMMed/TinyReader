@@ -2,13 +2,16 @@
 
 namespace Infrastructure.Data.Seed.BasicEntities
 {
-    public class StudentSeeder : Seeder<Student>
+    public static class StudentSeeder
     {
-        public StudentSeeder()
+        public static List<Student> Students { get; } = Generate();
+
+        private static List<Student> Generate()
         {
+            var list = new List<Student>();
             for (int i = 1; i <= 20; i++)
             {
-                Entities.Add(new Student
+                list.Add(new Student
                 {
                     Id = Guid.Parse($"00000000-0000-0000-0000-{i.ToString().PadLeft(12, '0')}"),
                     Name = $"User{i}",
@@ -16,6 +19,8 @@ namespace Infrastructure.Data.Seed.BasicEntities
                     Email = $"test{i}@email.com"
                 });
             }
+            return list;
         }
-    } 
+    }
+
 }

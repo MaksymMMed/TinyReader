@@ -22,11 +22,28 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
-            // Sedding many-to-many relationship data only in classroom configuration
+            // Sedding many-to-many classroom-student relationship data only in classroom configuration
             builder.HasMany(x => x.Students)
-               .WithMany(x => x.StudentClassrooms)
-               .UsingEntity(x => x.ToTable("ClassroomStudents"))
-               .HasData(new StudentClassroomSeeder().GenerateData());
+                .WithMany(x => x.StudentClassrooms)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ClassroomStudents",
+                    j => j.HasOne<Student>()
+                          .WithMany()
+                          .HasForeignKey("StudentId")
+                          .HasConstraintName("FK_ClassroomStudents_Students")
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Classroom>()
+                          .WithMany()
+                          .HasForeignKey("ClassroomId")
+                          .HasConstraintName("FK_ClassroomStudents_Classrooms")
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.ToTable("ClassroomStudents");
+                        j.HasKey("ClassroomId", "StudentId");
+                        j.HasData(StudentClassroomSeeder.Data);
+                    });
+
 
             builder.HasMany(x => x.Exercises)
                 .WithOne(x => x.Classroom)
@@ -40,7 +57,7 @@ namespace Infrastructure.Data.Configurations
                 .HasConstraintName("FK_Teacher_Classroom")
                 .OnDelete(DeleteBehavior.SetNull);
 
-            new ClassroomSeeder().GenerateData(builder);
+            builder.HasData(ClassroomSeeder.Classrooms);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Infrastructure.Data.Seed.BasicEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +16,8 @@ namespace Infrastructure.Data.Configurations
                    .HasForeignKey(x => x.TeacherId)
                    .OnDelete(DeleteBehavior.SetNull)
                    .HasConstraintName("FK_Teacher_Classrooms");
+
+            builder.HasData(TeacherSeeder.Teachers);
         }
     }
 }

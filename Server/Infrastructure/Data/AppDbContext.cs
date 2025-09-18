@@ -28,6 +28,7 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new RatingConfiguration());
+            builder.ApplyConfiguration(new ClassroomConfiguration());
             builder.ApplyConfiguration(new StudentConfiguration());
             builder.ApplyConfiguration(new TeacherConfiguration());
             builder.ApplyConfiguration(new ExerciseConfiguration());
