@@ -4,8 +4,8 @@ using MediatR;
 
 namespace Application.Classroom.Commands
 {
-    public record CreateClassroomRequest(string Name):IRequest<Result<bool>>;
-    public class CreateClassroomCommandHandler : IRequestHandler<CreateClassroomRequest, Result<bool>>
+    public record CreateClassroomCommand(string Name):IRequest<Result<bool>>;
+    public class CreateClassroomCommandHandler : IRequestHandler<CreateClassroomCommand, Result<bool>>
     {
         private readonly IClassroomService _service;
         public CreateClassroomCommandHandler(IClassroomService service)
@@ -13,7 +13,7 @@ namespace Application.Classroom.Commands
             _service = service;
         }
 
-        public async Task<Result<bool>> Handle(CreateClassroomRequest request, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(CreateClassroomCommand request, CancellationToken cancellationToken)
         {
             var result = await _service.CreateClassroomAsync(request.Name);
             return result;

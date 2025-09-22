@@ -5,6 +5,7 @@ using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Enums;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,14 +20,18 @@ namespace Infrastructure.Services
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityAppUser> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
 
-        public UserService(UserManager<IdentityAppUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration,AppDbContext context)
+        public UserService(AppDbContext context, UserManager<IdentityAppUser> userManager,
+            RoleManager<IdentityRole<Guid>> roleManager, IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
-            _configuration = configuration;
+            _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         private async Task<Result<IdentityAppUser>> SignUp(string email, string name, string surname, string password, UserRoles role)
@@ -39,6 +44,7 @@ namespace Infrastructure.Services
             var identityUser = new IdentityAppUser
             {
                 Email = email,
+                UserName = email,
             };
             var result = await _userManager.CreateAsync(identityUser, password);
 
@@ -121,7 +127,6 @@ namespace Infrastructure.Services
             return Result<TokenDto>.Success(tokenDto);
         }
 
-
         public async Task<Result<TokenDto>> SignUpStudent(string email, string name, string surname, string password, string passwordRepeated)
         {
             if (password != passwordRepeated)
@@ -160,6 +165,31 @@ namespace Infrastructure.Services
             }
 
             return await SignIn(email, password);
+        }
+
+        public Task<Result<bool>> DeleteUser(string password)
+        {
+            string email = _httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.Email)!.Value;
+
+            var user = _userManager.FindByEmailAsync(email).Result;
+
+            if (user == null)
+            {
+                return Task.FromResult(Result<bool>.Fail("User not found")!);
+            }
+
+            var result = _userManager.CheckPasswordAsync(user, password).Result;
+            if (!result)
+            {
+                return Task.FromResult(Result<bool>.Fail("Invalid password")!);
+            }
+            var deleteResult = _userManager.DeleteAsync(user).Result;
+            if (!deleteResult.Succeeded)
+            {
+                var errors = string.Join(", ", deleteResult.Errors.Select(e => e.Description));
+                return Task.FromResult(Result<bool>.Fail($"Failed to delete user: {errors}")!);
+            }
+            return Task.FromResult(Result<bool>.Success(true));
         }
 
         public Task<Result<string>> GenerateConfirmationToken(string email)

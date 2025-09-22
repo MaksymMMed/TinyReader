@@ -1,10 +1,14 @@
-﻿using API.Models.Account;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
+using Application.User.Command;
+using Application.User.Query;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("server/[controller]")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    [Route("server/auth")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -13,38 +17,84 @@ namespace API.Controllers
         {
             _userService = userService;
         }
-        [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn([FromBody] SignInModel model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var result = await _userService.SignIn(model.Email,model.Password);
-            if (!result.IsSuccess)
+        [HttpPost("sign-in")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> SignIn([FromBody] SignInQuery query)
+        {
+            try
             {
-                return BadRequest(result.Error);
+                var result = await _userService.SignIn(query.Email, query.Password);
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result.Error);
+                }
+                return Ok(result.Value);
             }
-            return Ok(result.Value);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
         [HttpPost("sign-up-teacher")]
-        public async Task<IActionResult> SignUpTeacher([FromBody] SignUpModel model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> SignUpTeacher([FromBody] SignUpTeacherCommand command)
         {
-            var result = await _userService.SignUpTeacher(model.Email,model.Name, model.Surname, model.Password, model.PasswordRepeated);
-            if (!result.IsSuccess)
+            try
             {
-                return BadRequest(result.Error);
+                var result = await _userService.SignUpTeacher(command.Email,command.Name, command.Surname, command.Password, command.PasswordRepeated);
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result.Error);
+                }
+                return Ok(result.Value);
             }
-            return Ok(result.Value);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
         [HttpPost("sign-up-student")]
-        public async Task<IActionResult> SignUpStudent([FromBody] SignUpModel model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> SignUpStudent([FromBody] SignUpStudentCommand command)
         {
-            var result = await _userService.SignUpStudent(model.Email, model.Name, model.Surname, model.Password, model.PasswordRepeated);
-            if (!result.IsSuccess)
+            try
             {
-                return BadRequest(result.Error);
+                var result = await _userService.SignUpStudent(command.Email, command.Name, command.Surname, command.Password, command.PasswordRepeated);
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result.Error);
+                }
+                return Ok(result.Value);
             }
-            return Ok(result.Value);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserCommand command)
+        {
+            try
+            {
+                var result = await _userService.DeleteUser(command.Password);
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result.Error);
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

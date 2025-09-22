@@ -37,6 +37,11 @@ namespace Infrastructure.Services
                     return Result<bool>.Fail("Student not found");
                 }
 
+                if (user.StudentClassrooms.Any(x=>x.Id == userId))
+                {
+                    return Result<bool>.Fail("Student is already in this classroom");
+                }
+
                 user.StudentClassrooms.Add(classroom);
                 _context.Students.Update(user);
                 await _context.SaveChangesAsync();
@@ -61,6 +66,11 @@ namespace Infrastructure.Services
                 if (user == null)
                 {
                     return Result<bool>.Fail("Student not found");
+                }
+
+                if (!user.StudentClassrooms.Any(x=>x.Id == userId))
+                {
+                    return Result<bool>.Fail("Student is not in this classroom");
                 }
                 user.StudentClassrooms.Remove(classroom);
                 _context.Students.Update(user);

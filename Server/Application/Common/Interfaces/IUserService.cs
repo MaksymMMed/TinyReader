@@ -7,6 +7,7 @@ namespace Application.Common.Interfaces
         Task<Result<TokenDto>> SignIn(string email, string password);
         Task<Result<TokenDto>> SignUpStudent(string email, string name, string surname, string password, string passwordRepeated);
         Task<Result<TokenDto>> SignUpTeacher(string email, string name, string surname, string password, string passwordRepeated);
+        Task<Result<bool>> DeleteUser(string password);
         Task<Result<string>> GenerateConfirmationToken(string email);
         Task<Result<string>> GenerateResetPasswordToken(string email);
         Task SendConfirmationEmail(string email, string confirmationLink);
