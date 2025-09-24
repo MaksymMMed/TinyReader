@@ -1,0 +1,69 @@
+services:
+  server:
+    restart: always
+    build:
+      context: ./Server
+      dockerfile: API/Dockerfile
+    ports: 
+      - "3001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      DB_CONNECTION: Server=mssql;Database=AppDbContext;User=sa;Password=YourStrong@Password;TrustServerCertificate=True;
+    depends_on:
+      mssql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  speech-service:
+    restart: always
+    build: ./SpeechServer
+    ports: 
+      - "3002:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"] 
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD : "YourStrong@Password"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -U sa -P YourStrong@Password -Q 'SELECT 1' -C || exit 1" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"   # стандартний порт AMQP
+      - "15672:15672" # веб-менеджмент
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mssql_data:

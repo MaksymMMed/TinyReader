@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace API.Exstensions
 {
@@ -57,11 +56,11 @@ namespace API.Exstensions
                 setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 
                 setup.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    jwtSecurityScheme, Array.Empty<string>()
-                }
-            });
+                    {
+                        jwtSecurityScheme, Array.Empty<string>()
+                    }
+                });
 
             });
         }
